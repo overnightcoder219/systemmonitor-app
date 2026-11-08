@@ -5,4 +5,4 @@ A Windows-style Task Manager for Android tablets and phones: processes per app, 
 - Website and setup guide: https://sammy219.github.io/systemmonitor-app/
 - Download: [Releases](../../releases/latest). Each release has the APK and its SHA-256.
 
-This repository holds only the download website and the signed releases. SystemMonitor is a personal project, not affiliated with Shizuku/RikkaApps, Xiaomi, Microsoft or Google. © 2026 HelloWorld.
+This repository holds only the download website and the signed releases. SystemMonitor is a personal project, not affiliated with Shizuku/RikkaApps, Xiaomi, Microsoft or Google. © 2026 OverNightCoder.
