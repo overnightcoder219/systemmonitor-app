@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="dark">
+  <meta name="darkreader-lock">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SystemMonitor</title>
+  <meta name="description" content="Task Manager ala Windows untuk Android: proses per aplikasi, grafik CPU, memori, penyimpanan, jaringan, dan GPU. Tanpa root, lewat Shizuku.">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    /* Halaman sengaja gelap (seperti aplikasinya); deklarasi ini mencegah mode gelap paksa browser mewarnai ulang. */
+    :root {
+      color-scheme: dark;
+      /* dari ikon: navy + biru, hijau, oranye */
+      --bg: #0b1020; --surface: #121a30; --surface-2: #18223d; --line: #24304f;
+      --text: #e8edf7; --muted: #93a0b8; --accent: #5b8cff; --accent-2: #7fd1a8; --accent-3: #ffb86b;
+      --accent-ink: #06122b; --warn: #ffb86b;
+      --grad: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%);
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background: radial-gradient(900px 520px at 85% -120px, rgba(91,140,255,.18), transparent 70%), radial-gradient(700px 460px at -10% 180px, rgba(127,209,168,.10), transparent 70%), var(--bg); background-repeat: no-repeat; color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    a { color: var(--accent); }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+    header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .3px; }
+    .brand img { width: 34px; height: 34px; border-radius: 9px; }
+    .lang button { background: none; border: 1px solid var(--line); color: var(--muted); padding: 4px 10px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; }
+    .lang button[aria-pressed="true"] { color: var(--text); border-color: var(--accent); }
+    .hero { padding: 36px 0 28px; }
+    .hero .mark { width: 88px; height: 88px; border-radius: 22px; box-shadow: 0 14px 40px rgba(91,140,255,.35); margin-bottom: 20px; }
+    .grad-text { color: var(--accent); }
+    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+      .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    }
+    .hero h1 { font-size: clamp(28px, 6vw, 44px); line-height: 1.15; margin: 0 0 12px; }
+    .hero p { color: var(--muted); font-size: 18px; margin: 0 0 24px; max-width: 680px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .btn { display: inline-block; background: var(--grad); color: var(--accent-ink); font-weight: 700; text-decoration: none; padding: 14px 22px; border-radius: 12px; box-shadow: 0 8px 24px rgba(91,140,255,.25); transition: transform .15s, box-shadow .15s; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(91,140,255,.35); }
+    .btn.ghost { background: rgba(255,255,255,.02); color: var(--text); border: 1px solid var(--line); font-weight: 600; box-shadow: none; }
+    .btn.ghost:hover { border-color: var(--accent); }
+    .meta { color: var(--muted); font-size: 13px; margin-top: 14px; word-break: break-all; }
+    .meta code { color: var(--text); }
+    .shot-hero { margin-top: 28px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+    .shot-hero img { display: block; width: 100%; height: auto; }
+    section { padding: 28px 0; border-top: 1px solid var(--line); }
+    h2 { font-size: 22px; margin: 0 0 16px; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .gallery figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    .gallery a { display: block; }
+    .gallery img { display: block; width: 100%; height: auto; transition: transform .2s; }
+    .gallery a:hover img { transform: scale(1.02); }
+    .gallery figcaption { padding: 10px 14px 12px; font-size: 14px; color: var(--muted); }
+    .gallery figcaption b { display: block; color: var(--text); font-size: 15px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+    .card { background: linear-gradient(180deg, var(--surface-2), var(--surface)); border: 1px solid var(--line); border-radius: 14px; padding: 16px; position: relative; overflow: hidden; transition: border-color .15s; }
+    .card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: var(--grad); opacity: .8; }
+    .card:hover { border-color: #33466f; }
+    .card h3 { margin: 0 0 6px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+    ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; display: grid; gap: 10px; }
+    ol.steps li { counter-increment: step; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 14px 56px; position: relative; }
+    ol.steps li::before { content: counter(step); position: absolute; left: 16px; top: 14px; width: 28px; height: 28px; border-radius: 50%; background: var(--grad); color: var(--accent-ink); font-weight: 700; display: grid; place-items: center; font-size: 14px; }
+    ol.steps b { display: block; }
+    ol.steps span { color: var(--muted); font-size: 14px; }
+    .tag { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; border: 1px solid var(--line); color: var(--muted); }
+    .tag.req { border-color: var(--accent); color: var(--accent); }
+    pre { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; overflow-x: auto; font-size: 14px; }
+    details.group { background: none; border: 0; padding: 0; margin: 0 0 6px; }
+    details.group > summary { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 12px 28px 12px 0; border-bottom: 1px solid var(--line); }
+    details.group[open] > summary { color: var(--accent); margin-bottom: 10px; }
+    details.group > summary::after { top: 15px; }
+    details.group[open] > summary::after { top: 19px; border-color: var(--accent); }
+    details.group .count { color: var(--muted); font-weight: 400; letter-spacing: 0; text-transform: none; margin-left: 6px; }
+    details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0 16px; margin-bottom: 8px; }
+    details[open] { border-color: var(--accent); }
+    summary { cursor: pointer; font-weight: 600; padding: 13px 28px 13px 0; list-style: none; position: relative; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: ""; position: absolute; right: 4px; top: 18px; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .15s; }
+    details[open] > summary::after { transform: rotate(-135deg); top: 22px; }
+    details p { color: var(--muted); margin: 0 0 14px; font-size: 15px; line-height: 1.55; }
+    details p + p { margin-top: -6px; }
+    .contact { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-top: 18px; }
+    .contact p { margin: 0; color: var(--muted); font-size: 15px; }
+    .contact a.mail { display: inline-block; background: var(--grad); color: var(--accent-ink); font-weight: 600; text-decoration: none; padding: 10px 16px; border-radius: 10px; }
+    .support { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--accent); border-radius: 14px; padding: 18px; }
+    .support p { margin: 0; color: var(--muted); font-size: 15px; max-width: 600px; }
+    .support p b { color: var(--text); }
+    .note { border-left: 3px solid var(--warn); padding: 8px 14px; background: var(--surface); border-radius: 0 10px 10px 0; color: var(--muted); font-size: 14px; margin-top: 18px; }
+    footer { color: var(--muted); font-size: 13px; padding: 28px 0 40px; border-top: 1px solid var(--line); }
+    .to-top { position: fixed; right: 16px; bottom: 20px; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--grad); color: var(--accent-ink); font-weight: 700; font-size: 20px; line-height: 1; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.35); opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .2s, transform .2s; }
+    .to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+    /* penampil gambar layar penuh */
+    .viewer { position: fixed; inset: 0; background: rgba(4,7,15,.92); display: grid; place-items: center; padding: 16px; z-index: 10; }
+    .viewer img { max-width: 100%; max-height: 92vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+    [hidden] { display: none !important; }
+    [data-en] { display: none; }
+    html[lang="en"] [data-id] { display: none; }
+    html[lang="en"] [data-en] { display: revert; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><img src="logo.svg" alt=""> SystemMonitor</div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set-lang="id" aria-pressed="true">ID</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <div class="hero">
+    <img class="mark" src="logo.svg" alt="">
+    <h1 data-id>Task Manager ala Windows, <span class="grad-text">untuk tablet dan HP Android</span></h1>
+    <h1 data-en>A Windows-style Task Manager <span class="grad-text">for Android tablets and phones</span></h1>
+    <p data-id>Lihat apa yang memakai memori, CPU, GPU, dan jaringan, per aplikasi. Tab Performa dengan grafik langsung, tombol Bersihkan untuk aplikasi cache, dan panduan setup yang memeriksa semuanya. Tanpa root, tanpa internet.</p>
+    <p data-en>See what uses memory, CPU, GPU and network, per app. A Performance tab with live graphs, a Clean button for cached apps, and a setup guide that checks everything. No root, no internet.</p>
+    <div class="cta">
+      <a class="btn" href="https://github.com/Sammy219/systemmonitor-app/releases/download/v2.2/SystemMonitor-2.2.apk">
+        <span data-id>Unduh APK 2.2</span><span data-en>Download APK 2.2</span>
+      </a>
+      <a class="btn ghost" href="https://github.com/Sammy219/systemmonitor-app/releases">
+        <span data-id>Semua rilis</span><span data-en>All releases</span>
+      </a>
+      <a class="btn ghost" href="#setup">
+        <span data-id>Cara setup</span><span data-en>How to set up</span>
+      </a>
+    </div>
+    <div class="meta">Android 10+ · <span data-id>butuh</span><span data-en>needs</span> Shizuku · SHA-256 <code>d3e9de223d8099cd6799aadb0f530624af74d0234348d16ff149c4c21e14dda7</code></div>
+    <div class="shot-hero">
+      <img src="screenshots/performa-cpu.jpg" width="1600" height="825" alt="Tab Performa: grafik CPU dan daftar sumber daya" data-view>
+    </div>
+  </div>
+
+  <section>
+    <h2 data-id>Tangkapan layar</h2><h2 data-en>Screenshots</h2>
+    <div class="gallery">
+      <figure><a href="screenshots/proses.jpg" data-view><img src="screenshots/proses.jpg" loading="lazy" alt="Tab Proses"></a>
+        <figcaption><b><span data-id>Proses</span><span data-en>Processes</span></b><span data-id>Per aplikasi, bisa dibuka per proses. Total di kepala kolom.</span><span data-en>Per app, expandable to processes. Totals in the column headers.</span></figcaption></figure>
+      <figure><a href="screenshots/performa-memori.jpg" data-view><img src="screenshots/performa-memori.jpg" loading="lazy" alt="Tab Performa: memori"></a>
+        <figcaption><b><span data-id>Performa · Memori</span><span data-en>Performance · Memory</span></b><span data-id>Grafik pemakaian dan komposisi: dipakai, cache, kosong.</span><span data-en>Usage graph and composition: in use, cached, free.</span></figcaption></figure>
+      <figure><a href="screenshots/setup.jpg" data-view><img src="screenshots/setup.jpg" loading="lazy" alt="Panduan setup"></a>
+        <figcaption><b>Setup</b><span data-id>Setiap langkah diperiksa langsung, sebagian bisa disetel satu ketuk.</span><span data-en>Every step is checked live; several are one tap.</span></figcaption></figure>
+      <figure><a href="screenshots/peringatan-setup.jpg" data-view><img src="screenshots/peringatan-setup.jpg" loading="lazy" alt="Peringatan setup belum selesai"></a>
+        <figcaption><b><span data-id>Peringatan setup</span><span data-en>Setup reminder</span></b><span data-id>Muncul di Proses/Performa bila ada langkah yang belum selesai.</span><span data-en>Shown on Processes/Performance while a step is unfinished.</span></figcaption></figure>
+      <figure><a href="screenshots/menu-ciut.jpg" data-view><img src="screenshots/menu-ciut.jpg" loading="lazy" alt="Menu samping diciutkan"></a>
+        <figcaption><b><span data-id>Menu bisa diciutkan</span><span data-en>Collapsible menu</span></b><span data-id>Tombol ☰ menyisakan ikon saja, lebih banyak ruang untuk data.</span><span data-en>The ☰ button leaves icons only, more room for data.</span></figcaption></figure>
+      <figure><a href="screenshots/pengaturan.jpg" data-view><img src="screenshots/pengaturan.jpg" loading="lazy" alt="Pengaturan"></a>
+        <figcaption><b><span data-id>Pengaturan</span><span data-en>Settings</span></b><span data-id>Kecepatan pembaruan dan keamanan Wireless debugging.</span><span data-en>Update speed and Wireless debugging security.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-id>Fitur</h2><h2 data-en>Features</h2>
+    <div class="grid">
+      <div class="card">
+        <h3 data-id>Proses per aplikasi</h3><h3 data-en>Processes per app</h3>
+        <p data-id>Memori (PSS), memori GPU, jaringan, dan CPU tiap aplikasi; aplikasi dengan banyak proses digabung dan bisa dibuka. Cari nama, paket, atau PID.</p>
+        <p data-en>Memory (PSS), GPU memory, network and CPU per app; multi-process apps are grouped and expandable. Search by name, package or PID.</p>
+      </div>
+      <div class="card">
+        <h3 data-id>Performa dengan grafik</h3><h3 data-en>Performance graphs</h3>
+        <p data-id>CPU (juga per inti), Memori, Penyimpanan, Jaringan, dan GPU, masing-masing dengan grafik riwayat dan statistik: kecepatan, proses, thread, waktu aktif, klaster inti, suhu.</p>
+        <p data-en>CPU (per core too), Memory, Storage, Network and GPU, each with a history graph and stats: speed, processes, threads, uptime, core clusters, temperature.</p>
+      </div>
+      <div class="card">
+        <h3 data-id>Bersihkan &amp; hentikan</h3><h3 data-en>Clean &amp; end tasks</h3>
+        <p data-id>Satu ketuk menghentikan semua aplikasi cache tanpa menyentuh yang sedang dipakai. Hentikan paksa aplikasi atau proses dari dialog detail.</p>
+        <p data-en>One tap stops every cached app without touching what you are using. Force-stop an app or process from its detail dialog.</p>
+      </div>
+      <div class="card">
+        <h3 data-id>Tanpa root, tanpa internet</h3><h3 data-en>No root, no internet</h3>
+        <p data-id>Akses sistem lewat Shizuku (hak shell). Aplikasi tidak punya izin internet; semua data tetap di perangkat.</p>
+        <p data-en>System access through Shizuku (shell rights). The app has no internet permission; all data stays on the device.</p>
+      </div>
+      <div class="card">
+        <h3 data-id>Wireless debugging aman</h3><h3 data-en>Safer Wireless debugging</h3>
+        <p data-id>Wireless debugging hanya menyala sebentar saat boot untuk memulai Shizuku, lalu dimatikan otomatis supaya port adb tidak terbuka di Wi-Fi.</p>
+        <p data-en>Wireless debugging only runs briefly at boot to start Shizuku, then is switched off so the adb port isn't open on Wi-Fi.</p>
+      </div>
+      <div class="card">
+        <h3 data-id>Hemat memori</h3><h3 data-en>Light on memory</h3>
+        <p data-id>Proses layanan shell dilepas saat aplikasi tidak terlihat, ikon disimpan kecil, dan cache dilepas saat Android meminta memori.</p>
+        <p data-en>The shell service process is released while the app isn't visible, icons are stored small, and caches are dropped when Android asks for memory.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="setup">
+    <h2 data-id>Pengaturan awal</h2><h2 data-en>First-time setup</h2>
+    <p data-id>Tab <b>Setup</b> terbuka sendiri saat ada langkah wajib yang belum selesai dan memeriksa setiap langkah. Langkah yang disarankan tidak menghalangi pemakaian.</p>
+    <p data-en>The <b>Setup</b> tab opens by itself while a required step is missing and checks every step. Recommended steps never block you.</p>
+    <ol class="steps">
+      <li><b><span data-id>Pasang APK</span><span data-en>Install the APK</span></b>
+        <span data-id>Unduh di perangkat dan izinkan pemasangan dari browser. Kalau Play Protect bertanya, pilih "Install anyway".</span>
+        <span data-en>Download on the device and allow installs from the browser. If Play Protect asks, choose "Install anyway".</span></li>
+      <li><b><span data-id>Pasang Shizuku</span><span data-en>Install Shizuku</span><span class="tag req" data-id>wajib</span><span class="tag req" data-en>required</span></b>
+        <span data-id>Dari Play Store atau <a href="https://github.com/RikkaApps/Shizuku/releases" rel="noopener">rilis resmi RikkaApps</a>.</span>
+        <span data-en>From the Play Store or the <a href="https://github.com/RikkaApps/Shizuku/releases" rel="noopener">official RikkaApps release</a>.</span></li>
+      <li><b><span data-id>Jalankan Shizuku</span><span data-en>Start Shizuku</span><span class="tag req" data-id>wajib</span><span class="tag req" data-en>required</span></b>
+        <span data-id>Developer options → nyalakan Wireless debugging. Di Shizuku: "Pair" sekali, lalu "Start".</span>
+        <span data-en>Developer options → turn on Wireless debugging. In Shizuku: "Pair" once, then "Start".</span></li>
+      <li><b><span data-id>Izin Shizuku untuk SystemMonitor</span><span data-en>Shizuku permission for SystemMonitor</span><span class="tag req" data-id>wajib</span><span class="tag req" data-en>required</span></b>
+        <span data-id>Ketuk "Beri izin" di Setup, lalu Izinkan di dialog Shizuku.</span>
+        <span data-en>Tap "Grant" in Setup, then Allow in Shizuku's dialog.</span></li>
+      <li><b><span data-id>Statistik jaringan per aplikasi</span><span data-en>Per-app network stats</span><span class="tag" data-id>disarankan</span><span class="tag" data-en>recommended</span></b>
+        <span data-id>Satu ketuk di Setup, diizinkan lewat Shizuku.</span>
+        <span data-en>One tap in Setup, granted through Shizuku.</span></li>
+      <li><b><span data-id>Shizuku menyala otomatis saat boot</span><span data-en>Shizuku starts at boot</span><span class="tag" data-id>disarankan</span><span class="tag" data-en>recommended</span></b>
+        <span data-id>Di Shizuku: ⚙ → "Start on boot (wireless debugging)". Bila Shizuku menampilkan peringatan untuk perangkat root, tutup saja: mode Wireless debugging tidak butuh root.</span>
+        <span data-en>In Shizuku: ⚙ → "Start on boot (wireless debugging)". If Shizuku shows a warning for rooted devices, dismiss it: the Wireless debugging mode needs no root.</span></li>
+      <li><b><span data-id>Xiaomi: Autostart &amp; baterai Shizuku</span><span data-en>Xiaomi: Autostart &amp; battery for Shizuku</span><span class="tag" data-id>disarankan</span><span class="tag" data-en>recommended</span></b>
+        <span data-id>Satu ketuk masing-masing di Setup, supaya HyperOS tidak menahan Shizuku setelah restart.</span>
+        <span data-en>One tap each in Setup, so HyperOS doesn't hold Shizuku back after a restart.</span></li>
+    </ol>
+  </section>
+
+  <section id="support">
+    <h2 data-id>Dukung SystemMonitor</h2><h2 data-en>Support SystemMonitor</h2>
+    <div class="support">
+      <p data-id><b>SystemMonitor gratis dan tanpa iklan.</b><br>Kalau aplikasi ini berguna, kamu bisa traktir kopi lewat Saweria untuk membantu pengembangan berikutnya.</p>
+      <p data-en><b>SystemMonitor is free and has no ads.</b><br>If it helps you, you can buy me a coffee on Saweria to support what comes next.</p>
+      <a class="btn" href="https://saweria.co/HelloWorld009" target="_blank" rel="noopener">
+        <span data-id>Dukung via Saweria</span><span data-en>Support on Saweria</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>FAQ</h2>
+    <details class="group" open>
+      <summary><span data-id>Umum</span><span data-en>General</span><span class="count">· 4</span></summary>
+      <details>
+        <summary><span data-id>Apa itu SystemMonitor dan apa yang dibutuhkan?</span><span data-en>What is SystemMonitor and what do I need?</span></summary>
+        <p data-id>Pemantau sistem dan task manager untuk Android dengan tampilan seperti Task Manager Windows. Yang dibutuhkan: Android 10+ dan aplikasi Shizuku. Tanpa root.</p>
+        <p data-en>A system monitor and task manager for Android, laid out like the Windows Task Manager. You need Android 10+ and the Shizuku app. No root.</p>
+      </details>
+      <details>
+        <summary><span data-id>Kenapa butuh Shizuku?</span><span data-en>Why does it need Shizuku?</span></summary>
+        <p data-id>Sejak Android 7, aplikasi biasa tidak boleh melihat proses aplikasi lain. Shizuku memberi hak shell (sama dengan adb dari komputer) kepada aplikasi yang kamu izinkan, sehingga SystemMonitor bisa membaca daftar proses, memori, GPU, dan suhu.</p>
+        <p data-en>Since Android 7 regular apps can't see other apps' processes. Shizuku gives shell rights (the same as adb from a computer) to apps you approve, so SystemMonitor can read processes, memory, GPU and temperatures.</p>
+      </details>
+      <details>
+        <summary><span data-id>Data apa yang dikumpulkan?</span><span data-en>What data is collected?</span></summary>
+        <p data-id>Tidak ada. SystemMonitor tidak punya izin internet dan tidak punya server; semua angka dibaca dan ditampilkan di perangkat saja.</p>
+        <p data-en>None. SystemMonitor has no internet permission and no server; every number is read and shown on the device only.</p>
+      </details>
+      <details>
+        <summary><span data-id>Kenapa tidak ada di Play Store?</span><span data-en>Why isn't it on the Play Store?</span></summary>
+        <p data-id>Aplikasi ini bergantung pada Shizuku dan perintah shell, jadi dibagikan langsung di sini. Setiap rilis ditandatangani dengan kunci yang sama dan disertai SHA-256.</p>
+        <p data-en>It depends on Shizuku and shell commands, so it is distributed here. Every release is signed with the same key and comes with its SHA-256.</p>
+      </details>
+    </details>
+    <details class="group">
+      <summary><span data-id>Penggunaan</span><span data-en>Using it</span><span class="count">· 4</span></summary>
+      <details>
+        <summary><span data-id>Apa yang dihentikan tombol Bersihkan?</span><span data-en>What does Clean stop?</span></summary>
+        <p data-id>Hanya aplikasi berstatus Cache (disimpan di memori tapi tidak tampil). Aplikasi yang sedang dipakai, jendela mengambang, musik, layanan, dan proses sistem tidak disentuh. Aplikasi yang dihentikan mulai dari awal saat dibuka lagi.</p>
+        <p data-en>Only apps in the Cached state (kept in memory but not shown). Apps in use, floating windows, music, services and system processes are left alone. Stopped apps start fresh when reopened.</p>
+      </details>
+      <details>
+        <summary><span data-id>Kenapa memori selalu terlihat "terpakai" banyak?</span><span data-en>Why does memory always look "used"?</span></summary>
+        <p data-id>Android sengaja menyimpan aplikasi di RAM supaya dibuka lagi lebih cepat. RAM kosong tidak membuat perangkat lebih cepat; yang penting angka <b>Tersedia</b>. Rendah setelah restart itu wajar dan akan naik lagi.</p>
+        <p data-en>Android keeps apps in RAM on purpose so they reopen faster. Empty RAM doesn't make the device faster; what matters is <b>Available</b>. Low usage after a restart is normal and will rise again.</p>
+      </details>
+      <details>
+        <summary><span data-id>Kenapa tidak ada persen beban GPU seperti di Windows?</span><span data-en>Why no GPU load % like on Windows?</span></summary>
+        <p data-id>Banyak ROM (mis. HyperOS) memblokir angka beban dan clock GPU untuk hak shell; hanya root yang bisa membacanya. GPU ponsel juga tidak punya VRAM sendiri, jadi yang ditampilkan adalah memori GPU sebagai porsi RAM, plus suhu GPU.</p>
+        <p data-en>Many ROMs (e.g. HyperOS) block GPU load and clock for shell rights; only root can read them. Phone GPUs also have no dedicated VRAM, so you see GPU memory as a share of RAM, plus GPU temperature.</p>
+      </details>
+      <details>
+        <summary><span data-id>Kenapa jaringan per aplikasi berupa total, bukan KB/s?</span><span data-en>Why is per-app network a total, not KB/s?</span></summary>
+        <p data-id>Android hanya memperbarui angka per aplikasi beberapa menit sekali untuk aplikasi biasa, jadi lajunya tidak bisa dihitung langsung. Laju total semua aplikasi tetap tampil langsung.</p>
+        <p data-en>Android refreshes per-app counters only every few minutes for regular apps, so a live rate can't be computed. The total rate for all apps is still live.</p>
+      </details>
+    </details>
+    <details class="group">
+      <summary><span data-id>Masalah</span><span data-en>Troubleshooting</span><span class="count">· 3</span></summary>
+      <details>
+        <summary><span data-id>Daftar proses kosong / Setup terus muncul</span><span data-en>Empty process list / Setup keeps opening</span></summary>
+        <p data-id>Shizuku belum berjalan atau izinnya dicabut. Buka Setup: langkah yang merah menunjukkan apa yang perlu dilakukan, dengan tombol langsung ke Shizuku.</p>
+        <p data-en>Shizuku isn't running or its permission was revoked. Open Setup: the unfinished step shows what to do, with a button straight to Shizuku.</p>
+      </details>
+      <details>
+        <summary><span data-id>Shizuku tidak menyala sendiri setelah restart</span><span data-en>Shizuku doesn't start after a restart</span></summary>
+        <p data-id>Periksa: Shizuku sudah di-pair dengan Wireless debugging, "Start on boot" menyala, perangkat tersambung ke Wi-Fi saat boot, dan (Xiaomi) Autostart serta baterai Shizuku diizinkan. "Forget all devices" di Wireless debugging menghapus pairing; ulangi pairing di Shizuku.</p>
+        <p data-en>Check that Shizuku is paired with Wireless debugging, "Start on boot" is on, the device is on Wi-Fi at boot, and (Xiaomi) Autostart and battery are allowed for Shizuku. "Forget all devices" in Wireless debugging removes the pairing; pair again in Shizuku.</p>
+      </details>
+      <details>
+        <summary><span data-id>Update dari versi lama</span><span data-en>Updating from an older version</span></summary>
+        <p data-id>Pasang APK baru di atas yang lama; pengaturan dan izin Shizuku tetap.</p>
+        <p data-en>Install the new APK over the old one; settings and the Shizuku permission are kept.</p>
+      </details>
+    </details>
+    <div class="note">
+      <span data-id>Proyek pribadi, tanpa garansi. Tidak berafiliasi dengan Shizuku/RikkaApps, Xiaomi, Microsoft, maupun Google.</span>
+      <span data-en>Personal project, no warranty. Not affiliated with Shizuku/RikkaApps, Xiaomi, Microsoft or Google.</span>
+    </div>
+    <div class="contact">
+      <p data-id><b>Saran, masukan, atau laporan masalah?</b><br>Kirim email — sertakan versi SystemMonitor, tipe perangkat, dan apa yang terjadi.</p>
+      <p data-en><b>Suggestions, feedback or a bug?</b><br>Send an email — include the SystemMonitor version, your device and what happened.</p>
+      <a class="mail" href="mailto:masterz1030@gmail.com?subject=SystemMonitor">masterz1030@gmail.com</a>
+    </div>
+  </section>
+
+  <footer>
+    SystemMonitor 2.2 · © 2026 HelloWorld · <a href="https://github.com/Sammy219/systemmonitor-app/releases">Releases</a> · <a href="https://saweria.co/HelloWorld009" target="_blank" rel="noopener">Saweria</a> · <a href="mailto:masterz1030@gmail.com?subject=SystemMonitor">masterz1030@gmail.com</a>
+  </footer>
+</div>
+<div class="viewer" hidden><img alt=""></div>
+<button type="button" class="to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script>
+  (function () {
+    var top = document.querySelector('.to-top');
+    function onScroll() { top.classList.toggle('show', window.scrollY > 700); }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  })();
+  (function () {
+    // Tangkapan layar: ketuk untuk melihat besar, ketuk lagi / Esc untuk menutup.
+    var viewer = document.querySelector('.viewer'), img = viewer.querySelector('img');
+    document.querySelectorAll('[data-view]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        img.src = el.getAttribute('href') || el.getAttribute('src');
+        img.alt = (el.querySelector('img') || el).alt || '';
+        viewer.hidden = false;
+      });
+    });
+    function close() { viewer.hidden = true; img.removeAttribute('src'); }
+    viewer.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+  (function () {
+    var root = document.documentElement;
+    function apply(lang) {
+      root.lang = lang;
+      document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-set-lang') === lang));
+      });
+      try { localStorage.setItem('systemmonitor-lang', lang); } catch (e) { /* storage unavailable */ }
+    }
+    var saved = null;
+    try { saved = localStorage.getItem('systemmonitor-lang'); } catch (e) { /* storage unavailable */ }
+    apply(saved || (navigator.language && navigator.language.toLowerCase().indexOf('id') === 0 ? 'id' : 'en'));
+    document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+      b.addEventListener('click', function () { apply(b.getAttribute('data-set-lang')); });
+    });
+  })();
+</script>
+</body>
+</html>
