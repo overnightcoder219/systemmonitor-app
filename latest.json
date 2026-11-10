@@ -1,7 +1,7 @@
 {
-  "versionName": "2.7",
-  "versionCode": 25,
-  "apk": "https://github.com/overnightcoder219/systemmonitor-app/releases/download/v2.7/SystemMonitor-2.7.apk",
-  "sha256": "cd43034df8ca8eaf12965fe62e84dd270c49bb64373f55513b197eec9f6c9504",
-  "notes": "SystemMonitor 2.7 — beban ke sistem saat terbuka turun lebih dari separuh.\n\n• Tab Proses kini membaca daftar memori proses paling sering sekali per 20 detik (sebelumnya setiap pembaruan), dan tab Performa hanya membaca GPU dan suhu setiap 10 detik. Di Xiaomi Pad 8 Pro, beban system_server akibat SystemMonitor turun dari ±29% ke ±13% satu inti, CPU aplikasi dari 4,9% ke 2,9%, dan RAM dari 122 ke 109 MB.\n• Saat SystemMonitor di latar belakang, tidak ada kerja sama sekali. Sesi Shizuku dilepas 30 detik setelah aplikasi ditinggalkan.\n• Pemasangan baru memakai interval pembaruan 2 detik. Pilihan interval yang sudah Anda atur tetap dipakai.\n• Statistik jaringan dan status Shizuku dibaca lebih jarang (disimpan sementara), sehingga pembaruan layar lebih ringan.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root."
+  "versionName": "2.8",
+  "versionCode": 26,
+  "apk": "https://github.com/overnightcoder219/systemmonitor-app/releases/download/v2.8/SystemMonitor-2.8.apk",
+  "sha256": "f805035422a36afe1eaaf6cfa27d525fc7f0f90bc16e8f3b6189140f83313dc0",
+  "notes": "SystemMonitor 2.8 — Bersihkan kini benar-benar tidak menyentuh layanan.\n\n• Aplikasi yang masih menjalankan layanan di proses lain (misalnya Google Play services, sinkronisasi, unduhan) tidak lagi ikut dihentikan saat Bersihkan, walaupun sebagian prosesnya berstatus cache. Sebelumnya Android menghentikan semua proses latar aplikasi itu sekaligus. Aplikasi yang dilewati tercantum di dialog sebagai \"layanan berjalan\".\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root."
 }
