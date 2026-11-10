@@ -1,13 +1,24 @@
 {
   "releases": [
     {
+      "tag_name": "v2.7",
+      "published_at": "2026-11-10T16:49:26Z",
+      "body": "SystemMonitor 2.7 — beban ke sistem saat terbuka turun lebih dari separuh.\n\n- Tab Proses kini membaca daftar memori proses paling sering sekali per 20 detik (sebelumnya setiap pembaruan), dan tab Performa hanya membaca GPU dan suhu setiap 10 detik. Di Xiaomi Pad 8 Pro, beban system_server akibat SystemMonitor turun dari ±29% ke ±13% satu inti, CPU aplikasi dari 4,9% ke 2,9%, dan RAM dari 122 ke 109 MB.\n- Saat SystemMonitor di latar belakang, tidak ada kerja sama sekali. Sesi Shizuku dilepas 30 detik setelah aplikasi ditinggalkan.\n- Pemasangan baru memakai interval pembaruan 2 detik. Pilihan interval yang sudah Anda atur tetap dipakai.\n- Statistik jaringan dan status Shizuku dibaca lebih jarang (disimpan sementara), sehingga pembaruan layar lebih ringan.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root.\n",
+      "assets": [
+        {
+          "name": "SystemMonitor-2.7.apk",
+          "download_count": 0
+        }
+      ]
+    },
+    {
       "tag_name": "v2.6",
       "published_at": "2026-11-10T07:05:39Z",
       "body": "SystemMonitor 2.6 — Bersihkan seperti \"Tutup semua\" HyperOS, layar memuat, splash tanpa kedip.\n\n- Bersihkan: dialog konfirmasi kini punya pilihan \"Tutup juga aplikasi di Terbaru\" (seperti tombol tutup semua di layar Terbaru HyperOS; pilihan terakhir diingat). Aplikasi yang dikunci di Terbaru, aplikasi yang sedang memutar media, SystemMonitor sendiri, Shizuku, dan aplikasi layar utama selalu dilewati; dialog menyebutkan apa saja yang dilewati.\n- Bersihkan kini melewati aplikasi yang dikunci juga saat menghentikan proses cache.\n- Layar memuat selama pembersihan, dengan langkah yang sedang berjalan, lalu hasilnya: aplikasi ditutup, proses dihentikan, dan RAM yang bertambah.\n- Splash screen tidak lagi berkedip di Android 16 (logo tertinggal sesaat di atas aplikasi) dan tidak meredup di HyperOS Android 14; animasi logo kini dimulai dari logo utuh.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root.\n",
       "assets": [
         {
           "name": "SystemMonitor-2.6.apk",
-          "download_count": 1
+          "download_count": 4
         }
       ]
     },
@@ -25,7 +36,7 @@
     {
       "tag_name": "v2.4",
       "published_at": "2026-11-09T18:40:08Z",
-      "body": "SystemMonitor 2.4 — lebih cepat dibuka, splash, dan update di dalam aplikasi.\n\n**Lebih cepat dibuka**\n- Daftar proses tampil sekitar setengah detik setelah aplikasi terbuka, tidak lagi kosong ~5 detik. Angka memori yang akurat (PSS) menyusul beberapa detik kemudian; sampai itu kolom memori menampilkan RSS dengan warna redup.\n- Selama memuat ada keterangan *Memuat daftar proses…* atau *Menghubungkan ke Shizuku…*, bukan layar kosong.\n- Persentase CPU terisi setelah 1 detik.\n- Grafik tidak lagi tersendat tiap beberapa detik: pembacaan memori (dumpsys meminfo) kini berjalan terpisah.\n\n**Splash screen**\n- Logo SystemMonitor beranimasi saat aplikasi dibuka (Android 12+).\n\n**Update di dalam aplikasi**\n- Saat dibuka, SystemMonitor memeriksa rilis baru. Bila ada: popup *Perbarui / Nanti*, unduhan dengan progres (juga di notifikasi, tetap jalan saat aplikasi ditinggalkan), pemeriksaan SHA-256, lalu installer Android.\n- Koneksi terputus: unduhan dilanjutkan dari posisi terakhir (otomatis hingga 3 kali, lalu tombol *Lanjutkan*). Pesan gagal menyebut penyebabnya: HP offline, error server, koneksi terputus, atau penyimpanan penuh.\n- Karena itu SystemMonitor kini meminta izin internet, hanya untuk membaca berkas versi terbaru di situsnya dan mengunduh APK dari rilis GitHub. Tidak ada data perangkat yang dikirim.\n\n**Perbaikan dan keamanan**\n- Kill memastikan PID masih proses yang sama sebelum mematikannya, jadi proses lain yang kebetulan memakai PID itu tidak ikut mati.\n- Aplikasi lain tidak bisa lagi mengosongkan atau mengacaukan daftar proses lewat nama proses yang aneh.\n- dumpsys yang macet dihentikan, tidak lagi menumpuk proses dan memori.\n- *Hentikan paksa* hanya ditawarkan bila paketnya pasti (UID bersama tidak lagi bisa menghentikan aplikasi yang salah).\n- Saat dijeda, hasil Kill / Hentikan paksa / Bersihkan langsung terlihat.\n- Tab Setup tidak lagi menjalankan pemeriksaan ulang setiap detik.\n- Kembali ke aplikasi sebentar setelah ditinggalkan tidak lagi memaksa jalur cadangan Shizuku selama 1 menit; Kill/Hentikan paksa yang sedang berjalan tidak terputus saat aplikasi ditinggalkan.\n- Pesan \"Shizuku belum berjalan\" tidak lagi berkedip sesaat setelah aplikasi dibuka.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root.\n",
+      "body": "",
       "assets": [
         {
           "name": "SystemMonitor-2.4.apk",
