@@ -1,13 +1,24 @@
 {
   "releases": [
     {
+      "tag_name": "v2.8",
+      "published_at": "2026-11-10T17:53:28Z",
+      "body": "SystemMonitor 2.8 — Bersihkan kini benar-benar tidak menyentuh layanan.\n\n- Aplikasi yang masih menjalankan layanan di proses lain (misalnya Google Play services, sinkronisasi, unduhan) tidak lagi ikut dihentikan saat Bersihkan, walaupun sebagian prosesnya berstatus cache. Sebelumnya Android menghentikan semua proses latar aplikasi itu sekaligus. Aplikasi yang dilewati tercantum di dialog sebagai \"layanan berjalan\".\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root.\n",
+      "assets": [
+        {
+          "name": "SystemMonitor-2.8.apk",
+          "download_count": 0
+        }
+      ]
+    },
+    {
       "tag_name": "v2.7",
       "published_at": "2026-11-10T16:49:26Z",
       "body": "SystemMonitor 2.7 — beban ke sistem saat terbuka turun lebih dari separuh.\n\n- Tab Proses kini membaca daftar memori proses paling sering sekali per 20 detik (sebelumnya setiap pembaruan), dan tab Performa hanya membaca GPU dan suhu setiap 10 detik. Di Xiaomi Pad 8 Pro, beban system_server akibat SystemMonitor turun dari ±29% ke ±13% satu inti, CPU aplikasi dari 4,9% ke 2,9%, dan RAM dari 122 ke 109 MB.\n- Saat SystemMonitor di latar belakang, tidak ada kerja sama sekali. Sesi Shizuku dilepas 30 detik setelah aplikasi ditinggalkan.\n- Pemasangan baru memakai interval pembaruan 2 detik. Pilihan interval yang sudah Anda atur tetap dipakai.\n- Statistik jaringan dan status Shizuku dibaca lebih jarang (disimpan sementara), sehingga pembaruan layar lebih ringan.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root.\n",
       "assets": [
         {
           "name": "SystemMonitor-2.7.apk",
-          "download_count": 0
+          "download_count": 1
         }
       ]
     },
@@ -25,7 +36,7 @@
     {
       "tag_name": "v2.5",
       "published_at": "2026-11-09T19:25:06Z",
-      "body": "SystemMonitor 2.5 — tombol periksa pembaruan, perbaikan judul ganda.\n\n- Pengaturan → Tentang: versi terpasang dan tombol \"Periksa pembaruan\" (hasilnya tampil di sebelahnya: sudah terbaru, versi baru tersedia, atau gagal memeriksa). Tawaran update bisa dibuka lagi walau sebelumnya memilih \"Nanti\".\n- Perbaikan: di 2.4 muncul bilah judul \"SystemMonitor\" ganda di atas aplikasi. Kini hanya judul aplikasi sendiri.\n- Teks Tentang diperbarui: internet hanya dipakai untuk memeriksa dan mengunduh pembaruan.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root.\n",
+      "body": "",
       "assets": [
         {
           "name": "SystemMonitor-2.5.apk",
