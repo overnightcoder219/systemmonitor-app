@@ -1,7 +1,7 @@
 {
-  "versionName": "2.5",
-  "versionCode": 23,
-  "apk": "https://github.com/overnightcoder219/systemmonitor-app/releases/download/v2.5/SystemMonitor-2.5.apk",
-  "sha256": "3daff9a4d7acc4da53961e933e334c9fc5e995c1e372b6cd8406dfa91b1998d4",
-  "notes": "SystemMonitor 2.5 — tombol periksa pembaruan, perbaikan judul ganda.\n\n• Pengaturan → Tentang: versi terpasang dan tombol \"Periksa pembaruan\" (hasilnya tampil di sebelahnya: sudah terbaru, versi baru tersedia, atau gagal memeriksa). Tawaran update bisa dibuka lagi walau sebelumnya memilih \"Nanti\".\n• Perbaikan: di 2.4 muncul bilah judul \"SystemMonitor\" ganda di atas aplikasi. Kini hanya judul aplikasi sendiri.\n• Teks Tentang diperbarui: internet hanya dipakai untuk memeriksa dan mengunduh pembaruan.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root."
+  "versionName": "2.6",
+  "versionCode": 24,
+  "apk": "https://github.com/overnightcoder219/systemmonitor-app/releases/download/v2.6/SystemMonitor-2.6.apk",
+  "sha256": "97840f6a7f727d97c3b302ca99a8eea1d3e3f89561932cf44b61219140247df4",
+  "notes": "SystemMonitor 2.6 — Bersihkan seperti \"Tutup semua\" HyperOS, layar memuat, splash tanpa kedip.\n\n• Bersihkan: dialog konfirmasi kini punya pilihan \"Tutup juga aplikasi di Terbaru\" (seperti tombol tutup semua di layar Terbaru HyperOS; pilihan terakhir diingat). Aplikasi yang dikunci di Terbaru, aplikasi yang sedang memutar media, SystemMonitor sendiri, Shizuku, dan aplikasi layar utama selalu dilewati; dialog menyebutkan apa saja yang dilewati.\n• Bersihkan kini melewati aplikasi yang dikunci juga saat menghentikan proses cache.\n• Layar memuat selama pembersihan, dengan langkah yang sedang berjalan, lalu hasilnya: aplikasi ditutup, proses dihentikan, dan RAM yang bertambah.\n• Splash screen tidak lagi berkedip di Android 16 (logo tertinggal sesaat di atas aplikasi) dan tidak meredup di HyperOS Android 14; animasi logo kini dimulai dari logo utuh.\n\nButuh / needs: Android 10+ dan Shizuku. Tanpa root."
 }
